@@ -1,22 +1,48 @@
 <Schema name="SucoFrutas" description="Esquema dos DataMarts da empresa de suco de frutas">
-  <Dimension type="TimeDimension" visible="true" name="Tempo">
+  <Dimension type="TimeDimension" visible="true" highCardinality="false" name="Tempo">
     <Hierarchy name="Calendario" visible="true" hasAll="true" allMemberName="Total Calendario" allMemberCaption="Total Calend&#225;rio" primaryKey="id_tempo" caption="Calend&#225;rio">
-      <Table name="dim_tempo" alias="">
+      <Table name="dim_tempo">
       </Table>
-      <Level name="Ano" visible="true" column="Numero_Ano" type="String" uniqueMembers="false" levelType="TimeYears">
+      <Level name="Ano" visible="true" column="Numero_Ano" type="String" uniqueMembers="false" levelType="TimeYears" hideMemberIf="Never">
       </Level>
-      <Level name="Semestre" visible="true" column="Numero_Semestre" nameColumn="Nome_Semestre" type="String" uniqueMembers="false" levelType="TimeHalfYears">
+      <Level name="Semestre" visible="true" column="Numero_Semestre" nameColumn="Nome_Semestre" type="String" uniqueMembers="false" levelType="TimeHalfYears" hideMemberIf="Never">
       </Level>
-      <Level name="Trimestre" visible="true" column="Numero_Trimestre" nameColumn="Nome_Trimestre" type="String" uniqueMembers="false" levelType="TimeQuarters">
+      <Level name="Trimestre" visible="true" column="Numero_Trimestre" nameColumn="Nome_Trimestre" type="String" uniqueMembers="false" levelType="TimeQuarters" hideMemberIf="Never">
       </Level>
-      <Level name="Mes" visible="true" column="Numero_Mes" nameColumn="Nome_Mes" type="String" uniqueMembers="false" levelType="TimeMonths" caption="M&#234;s">
+      <Level name="Mes" visible="true" column="Numero_Mes" nameColumn="Nome_Mes" type="String" uniqueMembers="false" levelType="TimeMonths" hideMemberIf="Never" caption="M&#234;s">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension type="StandardDimension" visible="true" name="Produto">
+    <Hierarchy name="Produto" visible="true" hasAll="true" allMemberName="Todos os Produtos" primaryKey="Id_Produto">
+      <Table name="dim_produto">
+      </Table>
+      <Level name="Categoria" visible="true" column="Cod_Categoria" type="String" uniqueMembers="false" caption="Categoria" captionColumn="Desc_Categoria">
+      </Level>
+      <Level name="Marca" visible="true" column="Cod_Marca" type="String" uniqueMembers="false" captionColumn="Desc_Marca">
+      </Level>
+      <Level name="Produto" visible="true" column="Cod_Produto" uniqueMembers="false" caption="Produto" captionColumn="Desc_Produto">
+      </Level>
+    </Hierarchy>
+    <Hierarchy name="Tamanho" visible="true" hasAll="true" allMemberName="Todos os Tamanhos" primaryKey="Id_Produto">
+      <Table name="dim_produto">
+      </Table>
+      <Level name="Tamanho" visible="true" column="Atr_Tamanho" type="String" uniqueMembers="false" caption="Tamanho" description="Tamanho" captionColumn="Atr_Tamanho">
+      </Level>
+    </Hierarchy>
+    <Hierarchy name="Sabor" visible="true" hasAll="true" allMemberName="Todos os Sabores" primaryKey="Id_Produto">
+      <Table name="dim_produto">
+      </Table>
+      <Level name="Sabor" visible="true" column="Atr_Sabor" type="String" uniqueMembers="false" captionColumn="Atr_Sabor">
       </Level>
     </Hierarchy>
   </Dimension>
   <Cube name="dmpresidencia" visible="true" description="DataMart da Presidencia" cache="true" enabled="true">
-    <Table name="fato_presidencia" alias="">
+    <Table name="fato_presidencia">
     </Table>
-    <DimensionUsage source="Tempo" name="Tempo" visible="true" foreignKey="ID_Tempo">
+    <DimensionUsage source="Tempo" name="Tempo" visible="true" foreignKey="ID_Tempo" highCardinality="false">
+    </DimensionUsage>
+    <DimensionUsage source="Produto" name="Produto" visible="true" foreignKey="ID_Produto">
     </DimensionUsage>
     <Measure name="Faturamento" column="Faturamento" datatype="Numeric" formatString="#,###.00" aggregator="sum" description="Faturamento em R$" visible="true">
     </Measure>
