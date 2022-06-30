@@ -37,12 +37,58 @@
       </Level>
     </Hierarchy>
   </Dimension>
+  <Dimension type="StandardDimension" visible="true" name="Cliente" description="Cliente">
+    <Hierarchy name="Cliente" visible="true" hasAll="true" allMemberName="Todos os Clientes" primaryKey="Id_Cliente" description="Cliente">
+      <Table name="dim_cliente">
+      </Table>
+      <Level name="Regiao" visible="true" column="Cod_Regiao" type="String" uniqueMembers="false" caption="Regi&#227;o" description="Regiao" captionColumn="Desc_Regiao">
+      </Level>
+      <Level name="Estado" visible="true" column="Cod_Estado" type="String" uniqueMembers="false" caption="Estado" captionColumn="Desc_Estado">
+      </Level>
+      <Level name="Cidade" visible="true" column="Cod_Cidade" type="String" uniqueMembers="false" caption="Cidade" description="Cidade" captionColumn="Desc_Cidade">
+      </Level>
+      <Level name="Cliente" visible="true" column="Cod_Cliente" type="String" uniqueMembers="false" caption="Cliente" description="Cliente" captionColumn="Desc_Cliente">
+      </Level>
+    </Hierarchy>
+    <Hierarchy name="Segmento" visible="true" hasAll="true" allMemberName="Todos os Segmentos" primaryKey="Id_Cliente" description="Segmento">
+      <Table name="dim_cliente">
+      </Table>
+      <Level name="Segmento" visible="true" column="Cod_Segmento" type="String" uniqueMembers="false" caption="Segmento" description="Segmento" captionColumn="Desc_Segmento">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension type="StandardDimension" visible="true" name="Organizacional" description="Organizacional">
+    <Hierarchy name="Organizacional" visible="true" hasAll="true" allMemberName="Todos da Organizacao" allMemberCaption="Todos da Organiza&#231;&#227;o" primaryKey="Id_Vendedor" caption="Organizacional" description="Organizacional">
+      <Table name="dim_organizacional" alias="">
+      </Table>
+      <Level name="Diretor" visible="true" column="Cod_Diretor" type="String" uniqueMembers="false" caption="Diretor" description="Diretor" captionColumn="Desc_Diretor">
+      </Level>
+      <Level name="Gerente" visible="true" column="Cod_Gerente" type="String" uniqueMembers="false" caption="Gerente" description="Gerente" captionColumn="Desc_Gerente">
+      </Level>
+      <Level name="Vendedor" visible="true" column="Cod_Vendedor" type="String" uniqueMembers="false" caption="Vendedor" description="Vendedor" captionColumn="Desc_Vendedor">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension type="StandardDimension" visible="true" name="Fabrica" caption="F&#225;brica">
+    <Hierarchy name="Fabrica" visible="true" hasAll="true" allMemberName="Todas as Fabricas" allMemberCaption="Todas as F&#225;bricas" primaryKey="Id_Fabrica" caption="F&#225;brica">
+      <Table name="dim_fabrica">
+      </Table>
+      <Level name="Fabrica" visible="true" column="Cod_Fabrica" type="String" uniqueMembers="false" caption="F&#225;brica" captionColumn="Desc_Fabrica">
+      </Level>
+    </Hierarchy>
+  </Dimension>
   <Cube name="dmpresidencia" visible="true" description="DataMart da Presidencia" cache="true" enabled="true">
     <Table name="fato_presidencia">
     </Table>
     <DimensionUsage source="Tempo" name="Tempo" visible="true" foreignKey="ID_Tempo" highCardinality="false">
     </DimensionUsage>
     <DimensionUsage source="Produto" name="Produto" visible="true" foreignKey="ID_Produto">
+    </DimensionUsage>
+    <DimensionUsage source="Cliente" name="Cliente" visible="true" foreignKey="ID_Cliente">
+    </DimensionUsage>
+    <DimensionUsage source="Organizacional" name="Organizacional" visible="true" foreignKey="ID_Vendedor">
+    </DimensionUsage>
+    <DimensionUsage source="Fabrica" name="Fabrica" caption="F&#225;brica" visible="true" foreignKey="ID_Fabrica">
     </DimensionUsage>
     <Measure name="Faturamento" column="Faturamento" datatype="Numeric" formatString="#,###.00" aggregator="sum" description="Faturamento em R$" visible="true">
     </Measure>
@@ -62,5 +108,17 @@
     </Measure>
     <Measure name="Unidade Vendida" column="Unidade_Vendida" datatype="Numeric" formatString="#,###.00" aggregator="sum" description="Unidade Vendida" visible="true">
     </Measure>
+    <CalculatedMember name="Faturamento Liquido" formatString="" caption="Faturamento L&#237;quido" formula="[Measures].[Faturamento]-[Measures].[Custo de Frete]-[Measures].[Imposto]" dimension="Measures" visible="true">
+    </CalculatedMember>
+    <CalculatedMember name="Margem" caption="Margem" formula="[Measures].[Faturamento Liquido]-[Measures].[Custo Fixo]-[Measures].[Custo Variavel]" dimension="Measures" visible="true">
+    </CalculatedMember>
+    <CalculatedMember name="Preco Medio" formatString="" caption="Pre&#231;o M&#233;dio" formula="[Measures].[Faturamento]/[Measures].[Quantidade Vendida]" dimension="Measures" visible="true">
+    </CalculatedMember>
+    <CalculatedMember name="Variacao da Meta Faturamento" caption="Varia&#231;&#227;o da Meta Faturamento" formula="(([Measures].[Faturamento Liquido]/[Measures].[Meta Faturamento])-1)*100" dimension="Measures" visible="true">
+    </CalculatedMember>
+    <CalculatedMember name="Variacao da Meta Custo" caption="Varia&#231;&#227;o da Meta Custo" formula="((([Measures].[Custo Fixo]+[Measures].[Custo Variavel])/[Measures].[Meta Custo])-1)*100" dimension="Measures" visible="true">
+    </CalculatedMember>
+    <CalculatedMember name="Variacao da Meta Margem" caption="Varia&#231;&#227;o da Meta Margem" formula="((([Measures].[Margem])/([Measures].[Meta Faturamento]-[Measures].[Meta Custo]))-1)*100" dimension="Measures" visible="true">
+    </CalculatedMember>
   </Cube>
 </Schema>
