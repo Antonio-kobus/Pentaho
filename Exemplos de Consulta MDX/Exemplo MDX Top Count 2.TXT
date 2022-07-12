@@ -1,0 +1,7 @@
+select NON EMPTY {[Measures].[Faturamento] } ON COLUMNS,
+  NON EMPTY TOPCOUNT({ DESCENDANTS([Cliente].[Centro Oeste].[DF].[Brasília]
+,[Cliente].[Cliente]) }, 1, [Measures].[Faturamento]) ON ROWS
+from [dmpresidencia]
+where {[Tempo.Calendario].[2014]}
+
+

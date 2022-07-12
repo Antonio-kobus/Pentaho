@@ -1,0 +1,8 @@
+select NON EMPTY {[Measures].[Faturamento] } ON COLUMNS,
+  NON EMPTY GENERATE([Cliente].[Cidade].Members, 
+TOPCOUNT({ DESCENDANTS([Cliente].[Cidades].CurrentMember
+,[Cliente].[Cliente]) }, 1, [Measures].[Faturamento]))
+ ON ROWS
+from [dmpresidencia]
+where {[Tempo.Calendario].[2014]}
+

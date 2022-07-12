@@ -1,0 +1,5 @@
+select NON EMPTY {[Measures].[Faturamento], [Measures].[TOTAL]} ON COLUMNS,
+  NON EMPTY Order(BottomPercent([Cliente].[Cidade].Members, 25,[Measures].[Faturamento])
+ , [Measures].[Faturamento], BDESC) ON ROWS
+from [dmpresidencia]
+where {[Tempo.Calendario].[2014]}

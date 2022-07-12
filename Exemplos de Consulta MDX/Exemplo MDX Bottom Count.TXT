@@ -1,0 +1,6 @@
+select NON EMPTY {[Measures].[Faturamento]} ON COLUMNS,
+  NON EMPTY Order(BottomCount([Cliente].[Cidade].Members, 5,[Measures].[Faturamento])
+ , [Measures].[Faturamento], BASC) ON ROWS
+from [dmpresidencia]
+where {[Tempo.Calendario].[2014]}
+

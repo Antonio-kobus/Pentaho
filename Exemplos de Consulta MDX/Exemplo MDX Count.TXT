@@ -1,0 +1,15 @@
+WITH SET [CIDADES]
+AS 'Order([Cliente].[Cidade].Members, [Measures].[Faturamento], BDESC)'
+MEMBER [Measures].[Posição Ordenação]
+AS 'RANK([Cliente].[Cidade].CurrentMember,[CIDADES]))',
+FORMAT_STRING = '#;#;-' 
+MEMBER [Measures].[COUNT MEMBERS] AS
+' ([Cliente].[Cidade].Members.Count)' 
+, FORMAT_STRING = '#;#;-'
+select NON EMPTY {[Measures].[Faturamento], [Measures].[Posição Ordenação], 
+[Measures].[COUNT MEMBERS] } ON COLUMNS,
+  NON EMPTY { [CIDADES] } ON ROWS
+from [dmpresidencia]
+where {[Tempo.Calendario].[2014]}
+
+

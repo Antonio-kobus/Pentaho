@@ -1,0 +1,6 @@
+select NON EMPTY {[Measures].[Faturamento]} ON COLUMNS,
+  NON EMPTY Order(TopSum([Cliente].[Cidade].Members, 25000000,[Measures].[Faturamento])
+ , [Measures].[Faturamento], BASC) ON ROWS
+from [dmpresidencia]
+where {[Tempo.Calendario].[2014]}
+
