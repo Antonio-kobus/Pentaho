@@ -64,3 +64,15 @@ TopPercent ( [Produto].[Produto].Members, 30,  [Measures].[Faturamento] )
  ) ) }'
 Select { [Produtos representam 30% das vendas para os 20% melhores clientes]  } On Rows  , {  [Tempo.Calendario].[2014] } 
 On Columns FROM [dmpresidencia]
+
+-- Queremos fazer uma análise 30% produtos mais vendidos dos nossos diretores para o ano de 2014. Como deve ser o MDX?
+
+WITH 
+SET [Diretores] AS
+'[Organizacional].[Diretor].Members '
+SET [Produtos representam 30% das vendas para os diretores] AS '{ Generate ( [Diretores] , 
+CrossJoin ( { [Organizacional].[Diretor].CurrentMember }, 
+TopPercent ( [Produto].[Produto].Members, 30,  [Measures].[Faturamento] )
+ ) ) }'
+Select { [Produtos representam 30% das vendas para os diretores]  } On Rows  , {  [Tempo.Calendario].[2014] } 
+On Columns FROM [dmpresidencia]
