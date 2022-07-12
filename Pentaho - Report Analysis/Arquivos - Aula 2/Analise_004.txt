@@ -1,0 +1,66 @@
+Select
+{ TopCount( [Cliente].[Cliente].Members, 10, [Measures].[Faturamento] )  } On Rows  ,
+{  [Tempo.Calendario].[2014] } 
+On Columns 
+FROM [dmpresidencia]
+
+WITH
+SET [Melhores 3 Produtos] AS
+'( TopCount ([Produto].[Produto].Members, 3, [Measures].[Faturamento]))'
+Select { TopCount( [Cliente].[Cliente].Members, 10, [Measures].[Faturamento] )  }
+On Rows  ,{  [Melhores 3 Produtos] } 
+On Columns FROM [dmpresidencia]
+WHERE {  [Tempo.Calendario].[2014] } 
+
+WITH 
+SET [Melhores 10 Clientes] AS
+'TopCount( [Cliente].[Cliente].Members, 10, [Measures].[Faturamento] ) '
+MEMBER [Measures].[Faturamento Melhores 10 Clientes] AS
+'Sum({[Melhores 10 Clientes]}, [Measures].[Faturamento])'
+SET [Melhores 3 Produtos dos 10 Melhores Clientes] AS
+'( TopCount ([Produto].[Produto].Members, 3, [Measures].[Faturamento Melhores 10 Clientes]))'
+Select{ [Melhores 10 Clientes]  }On Rows  ,
+{  [Melhores 3 Produtos dos 10 Melhores Clientes] } On Columns 
+FROM [dmpresidencia] WHERE {  [Tempo.Calendario].[2014] }
+
+WITH 
+SET [Melhores 10 Clientes] AS
+'TopCount( [Cliente].[Cliente].Members, 10, [Measures].[Faturamento] ) '
+MEMBER [Measures].[Faturamento Melhores 10 Clientes] AS
+'Sum({[Melhores 10 Clientes]}, [Measures].[Faturamento])'
+SET [Melhores 3 Produtos dos 10 Melhores Clientes] AS
+'( TopCount ([Produto].[Produto].Members, 3, [Measures].[Faturamento Melhores 10 Clientes]))'
+Select{ [Melhores 10 Clientes]  }On Rows  ,
+{  [Melhores 3 Produtos dos 10 Melhores Clientes] } On Columns 
+FROM [dmpresidencia] WHERE {  [Tempo.Calendario].[2014] }
+
+WITH 
+SET [Melhores 10 Clientes] AS
+'TopCount( [Cliente].[Cliente].Members, 10, [Measures].[Faturamento] ) '
+SET [Melhores 3 Produtos dos 10 Melhores Clientes] AS
+'{ Generate ( [Melhores 10 Clientes], ( TopCount ([Produto].[Produto].Members, 3, [Measures].[Faturamento] ) ) ) }'
+Select { [Melhores 3 Produtos dos 10 Melhores Clientes]  }
+On Rows  , {  [Measures].[Faturamento] } 
+On Columns  FROM [dmpresidencia]
+WHERE {  [Tempo.Calendario].[2014] } 
+
+WITH 
+SET [Melhores 10 Clientes] AS
+'TopCount( [Cliente].[Cliente].Members, 10, [Measures].[Faturamento] ) '
+SET [Melhores 3 Produtos dos 10 Melhores Clientes] AS
+'{ Generate ( [Melhores 10 Clientes], 
+CrossJoin ( { [Cliente].[Cliente].CurrentMember }, 
+TopCount ( [Produto].[Produto].Members, 3, [Measures].[Faturamento] )
+ ) ) }'
+Select { [Melhores 3 Produtos dos 10 Melhores Clientes]  }
+On Rows  , {  [Tempo.Calendario].[2014] } 
+On Columns  FROM [dmpresidencia]
+
+WITH 
+SET [Clientes representam 20% das vendas] AS
+'TopPercent( [Cliente].[Cliente].Members, 20, [Measures].[Faturamento] ) 'SET [Produtos representam 30% das vendas para os 20% melhores clientes] AS '{ Generate ( [Clientes representam 20% das vendas], 
+CrossJoin ( { [Cliente].[Cliente].CurrentMember }, 
+TopPercent ( [Produto].[Produto].Members, 30,  [Measures].[Faturamento] )
+ ) ) }'
+Select { [Produtos representam 30% das vendas para os 20% melhores clientes]  } On Rows  , {  [Tempo.Calendario].[2014] } 
+On Columns FROM [dmpresidencia]

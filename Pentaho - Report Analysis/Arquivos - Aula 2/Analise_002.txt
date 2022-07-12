@@ -1,0 +1,62 @@
+WITH 
+
+SET [CIDADES] AS
+'ORDER({[Cliente].[Cidade].Members},
+ [Measures].[Faturamento], BDESC)'
+
+SET [FILTRO ANO] AS
+'{[Tempo.Calendario].[2014]}'
+
+MEMBER [Measures].[Rank] AS
+'RANK (
+[Cliente].[Cidade].Currentmember
+,[CIDADES])' 
+, FORMAT_STRING = '#;#;-'
+
+MEMBER [Measures].[% Participação] AS
+'[Measures].[Faturamento]/
+([Measures].[Faturamento], [Cliente].[Todos os Clientes])'
+, FORMAT_STRING = "#,###.00 %"
+
+MEMBER [Measures].[Faturamento Acumulado] AS
+'Sum (Head ([CIDADES], Rank ([Cliente].[Cidade].Currentmember,
+[CIDADES] ) ), [Measures].[Faturamento]
+)', FORMAT_STRING = "#,###.00"
+
+MEMBER [Measures].[Membros Total] AS
+'([Cliente].[Cidade].Members.Count)' 
+, FORMAT_STRING = '#;#;-'
+
+MEMBER [Measures].[% Membro] AS
+'[Measures].[Rank]/[Measures].[Membros Total]'
+, FORMAT_STRING = "#,###.00 %"
+
+MEMBER [Measures].[% Part Acumulado] AS
+'Sum (Head ([CIDADES], Rank ([Cliente].[Cidade].Currentmember,
+[CIDADES] ) ),
+[Measures].[% Participação] 
+)', FORMAT_STRING = "#,###.00 %"
+
+MEMBER [Measures].[Margem Acumulada] AS
+'Sum (Head ([CIDADES],Rank ([Cliente].[Cidade].Currentmember,
+[CIDADES] ) ), [Measures].[Margem]
+)', FORMAT_STRING = "#,###.00"
+
+MEMBER [Measures].[% Margem Participação] AS
+'[Measures].[Margem]/
+([Measures].[Margem], [Cliente].[Todos os Clientes])'
+, FORMAT_STRING = "#,###.00 %"
+
+MEMBER [Measures].[% Margem Part Acumulado] AS
+'Sum (Head ([CIDADES], Rank ([Cliente].[Cidade].Currentmember,
+[CIDADES] ) ), [Measures].[% Margem Participação] 
+)', FORMAT_STRING = "#,###.00 %"
+
+
+SELECT
+NON EMPTY {[Measures].[Faturamento], [Measures].[% Part Acumulado] 
+, [Measures].[% Membro], [Measures].[% Margem Part Acumulado]
+} ON COLUMNS,
+NON EMPTY {[CIDADES]} ON ROWS
+FROM [dmpresidencia]
+WHERE {[FILTRO ANO]}
