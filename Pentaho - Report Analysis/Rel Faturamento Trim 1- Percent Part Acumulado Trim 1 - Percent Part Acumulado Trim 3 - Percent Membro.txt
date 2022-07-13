@@ -1,0 +1,85 @@
+WITH 
+
+MEMBER [Measures].[Faturamento Trimestre 1] AS
+'([Measures].[Faturamento], 
+[Tempo.Calendario].[2013].[Primeiro Semestre].[Primeiro Trimestre])'
+, FORMAT_STRING = "#,###.00"
+
+SET [CIDADES] AS
+'ORDER({[Cliente].[Cidade].Members},
+ [Measures].[Faturamento Trimestre 1], BDESC)'
+
+MEMBER [Measures].[Rank] AS
+'RANK (
+[Cliente].[Cidade].Currentmember
+,[CIDADES])' 
+, FORMAT_STRING = '#;#;-'
+
+MEMBER [Measures].[% Participação] AS
+'[Measures].[Faturamento Trimestre 1]/
+([Measures].[Faturamento Trimestre 1], [Cliente].[Todos os Clientes])'
+, FORMAT_STRING = "#,###.00 %"
+
+MEMBER [Measures].[Faturamento Acumulado] AS
+'Sum (Head ([CIDADES], Rank ([Cliente].[Cidade].Currentmember,
+[CIDADES] ) ), [Measures].[Faturamento Trimestre 1]
+)', FORMAT_STRING = "#,###.00"
+
+MEMBER [Measures].[Membros Total] AS
+'([Cliente].[Cidade].Members.Count)' 
+, FORMAT_STRING = '#;#;-'
+
+MEMBER [Measures].[% Membro] AS
+'[Measures].[Rank]/[Measures].[Membros Total]'
+, FORMAT_STRING = "#,###.00 %"
+
+MEMBER [Measures].[% Part Acumulado Primeiro Trimestre] AS
+'Sum (Head ([CIDADES], Rank ([Cliente].[Cidade].Currentmember,
+[CIDADES] ) ),
+[Measures].[% Participação] 
+)', FORMAT_STRING = "#,###.00 %"
+
+MEMBER [Measures].[Faturamento Trimestre 3] AS
+'([Measures].[Faturamento], [Tempo.Calendario].[2013].[Segundo Semestre].[Terceiro Trimestre])', FORMAT_STRING = "#,###.00"
+
+MEMBER [Measures].[Faturamento Acumulado Trimestre 3] AS
+'Sum (Head
+([CIDADES],Rank([Cliente].[Cidade].Currentmember,
+[CIDADES])),[Measures].[Faturamento Trimestre 3] 
+)', FORMAT_STRING = "#,###.00"
+
+MEMBER [Measures].[% Participação Trimestre 3] AS
+'[Measures].[Faturamento Trimestre 3] /
+([Measures].[Faturamento Trimestre 3] , [Cliente].[Todos os Clientes])'
+, FORMAT_STRING = "#,###.00 %"
+
+MEMBER [Measures].[% Part Acumulado Terceiro Trimestre] AS
+'Sum (Head
+([CIDADES],Rank([Cliente].[Cidade].Currentmember,
+[CIDADES])),[Measures].[% Participação Trimestre 3] 
+)', FORMAT_STRING = "#,###.00 %"
+
+
+SELECT
+NON EMPTY {[Measures].[Faturamento Trimestre 1],
+ [Measures].[% Part Acumulado Primeiro Trimestre], [Measures].[% Membro],
+ [Measures].[% Part Acumulado Terceiro Trimestre]} ON COLUMNS,
+NON EMPTY {[CIDADES]} ON ROWS
+FROM [dmpresidencia]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
