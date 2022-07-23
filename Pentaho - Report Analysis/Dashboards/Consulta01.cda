@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CDADescriptor>
+   <DataSources>
+      <Connection id="Consulta01" type="mondrian.jndi">
+         <Catalog>mondrian:/SucoFrutas</Catalog>
+         <Jndi>dmpresidencia</Jndi>
+      </Connection>
+   </DataSources>
+   <DataAccess access="public" connection="Consulta01" id="Consulta01" type="mdx">
+      <Name>Consulta01</Name>
+      <BandedMode>compact</BandedMode>
+      <Cache duration="3600" enabled="true"/>
+      <Columns/>
+      <Parameters/>
+      <Query><![CDATA[WITH
+SET [~COLUMNS] AS
+    {[Cliente].[Regiao].Members}
+SET [~ROWS] AS
+    {[Produto].[Marca].Members}
+SELECT
+NON EMPTY [~COLUMNS] ON COLUMNS,
+NON EMPTY [~ROWS] ON ROWS
+FROM [dmpresidencia]]]></Query>
+   </DataAccess>
+</CDADescriptor>

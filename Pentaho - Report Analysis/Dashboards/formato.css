@@ -1,0 +1,33 @@
+body{
+    background: url('fundo.png') top center no-repeat;
+}
+
+.titulo{
+	
+	font-family: Arial, Helvetica, sans-serif;
+font-size: 20px;
+letter-spacing: -1px;
+word-spacing: -0.6px;
+color: #000000;
+font-weight: 700;
+text-decoration: none;
+font-style: normal;
+font-variant: normal;
+text-transform: none;
+
+}
+
+.rodape{
+	font-family: Arial, Helvetica, sans-serif;
+font-size: 15px;
+letter-spacing: 0px;
+word-spacing: 0px;
+color: #000000;
+font-weight: 400;
+text-decoration: none;
+font-style: normal;
+font-variant: normal;
+text-transform: none;
+	
+	
+}

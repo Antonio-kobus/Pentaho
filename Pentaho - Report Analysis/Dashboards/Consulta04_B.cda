@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CDADescriptor>
+   <DataSources>
+      <Connection id="MDX1" type="mondrian.jndi">
+         <Catalog>mondrian:/SucoFrutas</Catalog>
+         <Jndi>dmpresidencia</Jndi>
+      </Connection>
+   </DataSources>
+   <DataAccess access="public" connection="MDX1" id="MDX1" type="mdx">
+      <Name>MDX1</Name>
+      <BandedMode>compact</BandedMode>
+      <Cache duration="3600" enabled="true"/>
+      <Columns/>
+      <Parameters/>
+      <Query><![CDATA[WITH
+SET [~FILTER] AS
+    {[Tempo.Calendario].[2013]}
+SET [~ROWS] AS
+    Order({[Cliente].[Estado].Members}, [Measures].[Faturamento], BDESC)
+SELECT
+NON EMPTY {[Measures].[Faturamento]} ON COLUMNS,
+NON EMPTY [~ROWS] ON ROWS
+FROM [dmpresidencia]
+WHERE [~FILTER]]]></Query>
+   </DataAccess>
+</CDADescriptor>

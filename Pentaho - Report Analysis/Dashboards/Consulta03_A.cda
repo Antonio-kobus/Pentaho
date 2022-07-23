@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CDADescriptor>
+   <DataSources>
+      <Connection id="graficoLinha" type="mondrian.jndi">
+         <Catalog>mondrian:/SucoFrutas</Catalog>
+         <Jndi>dmpresidencia</Jndi>
+      </Connection>
+      <Connection id="graficoPizza" type="mondrian.jndi">
+         <Catalog>mondrian:/SucoFrutas</Catalog>
+         <Jndi>dmpresidencia</Jndi>
+      </Connection>
+      <Connection id="graficoBarra" type="mondrian.jndi">
+         <Catalog>mondrian:/SucoFrutas</Catalog>
+         <Jndi>dmpresidencia</Jndi>
+      </Connection>
+      <Connection id="Selecao_Ano" type="sql.jndi">
+         <Jndi>dmpresidencia</Jndi>
+      </Connection>
+   </DataSources>
+   <DataAccess access="public" connection="graficoLinha" id="graficoLinha" type="mdx">
+      <Name>graficoLinha</Name>
+      <BandedMode>compact</BandedMode>
+      <Cache duration="3600" enabled="true"/>
+      <Columns/>
+      <Parameters>
+         <Parameter default="VAR_ANO" name="VAR_ANO" type="String"/>
+      </Parameters>
+      <Query><![CDATA[Select
+{[Measures].[Faturamento]} on columns,
+{[Tempo.Calendario].[${VAR_ANO}].[Primeiro Semestre].[Primeiro Trimestre].[Janeiro]:
+[Tempo.Calendario].[${VAR_ANO}].[Segundo Semestre].[Quarto Trimestre].[Dezembro]} on rows
+From
+[dmpresidencia]]]></Query>
+   </DataAccess>
+   <DataAccess access="public" connection="graficoPizza" id="graficoPizza" type="mdx">
+      <Name>graficoPizza</Name>
+      <BandedMode>compact</BandedMode>
+      <Cache duration="3600" enabled="true"/>
+      <Columns/>
+      <Parameters>
+         <Parameter default="VAR_ANO" name="VAR_ANO" type="String"/>
+      </Parameters>
+      <Query><![CDATA[WITH
+SET [~FILTER] AS
+    {[Tempo.Calendario].[${VAR_ANO}]}
+SET [~ROWS] AS
+    Order({[Produto].[Categoria].Members}, [Measures].[Faturamento], BDESC)
+SELECT
+NON EMPTY {[Measures].[Faturamento]} ON COLUMNS,
+NON EMPTY [~ROWS] ON ROWS
+FROM [dmpresidencia]
+WHERE [~FILTER]]]></Query>
+   </DataAccess>
+   <DataAccess access="public" connection="graficoBarra" id="graficoBarra" type="mdx">
+      <Name>graficoBarra</Name>
+      <BandedMode>compact</BandedMode>
+      <Cache duration="3600" enabled="true"/>
+      <Columns/>
+      <Parameters>
+         <Parameter default="VAR_ANO" name="VAR_ANO" type="String"/>
+         <Parameter default="VAR_CAT" name="VAR_CAT" type="String"/>
+      </Parameters>
+      <Query><![CDATA[WITH
+SET [~ROWS] AS
+    Order({[Cliente].[Estado].Members}, [Measures].[Faturamento], BDESC)
+SELECT
+NON EMPTY {[Measures].[Faturamento]} ON COLUMNS,
+NON EMPTY [~ROWS] ON ROWS
+FROM [dmpresidencia]
+WHERE CrossJoin({[Tempo.Calendario].[${VAR_ANO}]}, {[Produto].[${VAR_CAT}]})]]></Query>
+   </DataAccess>
+   <DataAccess access="public" connection="Selecao_Ano" id="Selecao_Ano" type="sql">
+      <Name>Selecao_Ano</Name>
+      <Cache duration="3600" enabled="true"/>
+      <Columns/>
+      <Parameters>
+         <Parameter default="VAR_ANO" name="VAR_ANO" type="String"/>
+      </Parameters>
+      <Query><![CDATA[SELECT distinct Numero_Ano AS ano 
+FROM dim_tempo where Numero_Ano in (2013,2014,2015)]]></Query>
+   </DataAccess>
+</CDADescriptor>

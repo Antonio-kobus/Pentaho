@@ -1,0 +1,13 @@
+{
+  "components" : {
+    "rows" : [ ]
+  },
+  "datasources" : {
+    "rows" : [ ]
+  },
+  "layout" : {
+    "rows" : [ ],
+    "title" : "CDF - Sample structure"
+  },
+  "filename" : "public/sucos/paineis/teste.wcdf"
+}
