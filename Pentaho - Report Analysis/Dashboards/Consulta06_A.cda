@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CDADescriptor>
+   <DataSources>
+      <Connection id="grafico_linha" type="sql.jndi">
+         <Jndi>dmpresidencia</Jndi>
+      </Connection>
+      <Connection id="selecao_fabricas" type="sql.jndi">
+         <Jndi>dmpresidencia</Jndi>
+      </Connection>
+      <Connection id="selecao_anos" type="sql.jndi">
+         <Jndi>dmpresidencia</Jndi>
+      </Connection>
+   </DataSources>
+   <DataAccess access="public" connection="grafico_linha" id="grafico_linha" type="sql">
+      <Name>grafico_linha</Name>
+      <Cache duration="3600" enabled="true"/>
+      <Columns/>
+      <Parameters>
+         <Parameter default="VAR_ANO" name="VAR_ANO" type="String"/>
+         <Parameter default="VAR_FABRICA" name="VAR_FABRICA" type="StringArray"/>
+      </Parameters>
+      <Query><![CDATA[SELECT X.NOME_MES, X.FATURAMENTO, X.CUSTO FROM (
+SELECT 
+CASE WHEN CAST(dim_tempo.numero_mes AS UNSIGNED) <= 9 THEN
+CONCAT('0', dim_tempo.numero_mes) ELSE dim_tempo.numero_mes END as MES,
+dim_tempo.NOME_MES,
+SUM(fato_presidencia.faturamento) AS FATURAMENTO, 
+SUM(fato_presidencia.custo_fixo) + 
+SUM(fato_presidencia.custo_frete) + 
+SUM(fato_presidencia.custo_variavel) AS CUSTO
+FROM fato_presidencia
+INNER JOIN dim_fabrica ON fato_presidencia.ID_Fabrica = dim_fabrica.ID_Fabrica
+INNER JOIN dim_tempo ON fato_presidencia.ID_Tempo = dim_tempo.ID_tempo
+WHERE dim_fabrica.Desc_Fabrica in (${VAR_FABRICA})
+AND dim_tempo.numero_ano in (${VAR_ANO})
+GROUP BY CASE WHEN CAST(dim_tempo.numero_mes AS UNSIGNED) <= 9 THEN
+CONCAT('0', dim_tempo.numero_mes) ELSE dim_tempo.numero_mes END,
+dim_tempo.NOME_MES) X]]></Query>
+   </DataAccess>
+   <DataAccess access="public" connection="selecao_fabricas" id="selecao_fabricas" type="sql">
+      <Name>selecao_fabricas</Name>
+      <Cache duration="3600" enabled="true"/>
+      <Columns/>
+      <Parameters/>
+      <Query><![CDATA[SELECT DISTINCT DESC_FABRICA FROM DIM_FABRICA
+WHERE COD_FABRICA IN ('001','002')
+ORDER BY DESC_FABRICA]]></Query>
+   </DataAccess>
+   <DataAccess access="public" connection="selecao_anos" id="selecao_anos" type="sql">
+      <Name>selecao_anos</Name>
+      <Cache duration="3600" enabled="true"/>
+      <Columns/>
+      <Parameters/>
+      <Query><![CDATA[SELECT DISTINCT NUMERO_ANO AS ANO FROM DIM_TEMPO
+WHERE NUMERO_ANO IN ('2013','2014','2015')
+ORDER BY NUMERO_ANO]]></Query>
+   </DataAccess>
+</CDADescriptor>

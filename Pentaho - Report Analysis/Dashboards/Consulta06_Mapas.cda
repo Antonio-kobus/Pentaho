@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CDADescriptor>
+   <DataSources>
+      <Connection id="selecao_posicoes" type="scripting.scripting">
+         <Initscript/>
+         <Language>beanshell</Language>
+      </Connection>
+      <Connection id="grafico_barra" type="sql.jndi">
+         <Jndi>dmpresidencia</Jndi>
+      </Connection>
+   </DataSources>
+   <DataAccess access="public" connection="selecao_posicoes" id="selecao_posicoes"
+               type="scriptable">
+      <Name>selecao_posicoes</Name>
+      <Cache duration="3600" enabled="true"/>
+      <Columns/>
+      <Parameters/>
+      <Query><![CDATA[import org.pentaho.reporting.engine.classic.core.util.TypedTableModel;
+
+String[] columnNames = new String[]{
+"Latitude", "Longitude", "Cidade"
+};
+
+Class[] columnTypes = new Class[]{
+String.class,String.class,String.class
+};
+
+TypedTableModel model = new TypedTableModel(columnNames, columnTypes);
+
+model.addRow(new Object[]{ new String("-30.0325"), new String("-51.230377"), new String("Porto Alegre")});
+model.addRow(new Object[]{ new String("-16.680519"), new String("-49,25613"), new String("Goiais")});
+model.addRow(new Object[]{ new String("-22.905560"), new String("-47.06083"), new String("Campinas")});
+model.addRow(new Object[]{ new String("-19.917299"), new String("-43.934559"), new String("Belo Horizonte")});
+model.addRow(new Object[]{ new String("-23.54867"),new String("-46.638248"), new String("São Paulo")});
+model.addRow(new Object[]{ new String("-20.464017"), new String("-54.616295"), new String("Campo Grande")});
+model.addRow(new Object[]{ new String("-22.911014"), new String("-43.691730"), new String("Rio de Janeiro")});
+model.addRow(new Object[]{ new String("-15.826691"), new String("-47.921822"), new String("Brasília")});
+model.addRow(new Object[]{ new String("-25.480877"), new String("-49.304424"), new String("Curitiba")});
+model.addRow(new Object[]{ new String("-23.960833"), new String("-46.333889"), new String("Santos")});
+model.addRow(new Object[]{ new String("-12.98225"), new String("-38.481277"), new String("Salvador")});
+model.addRow(new Object[]{ new String("-22.883237"), new String("-43.115455"), new String("Niterói")});
+
+return model;]]></Query>
+   </DataAccess>
+   <DataAccess access="public" connection="grafico_barra" id="grafico_barra" type="sql">
+      <Name>grafico_barra</Name>
+      <Cache duration="3600" enabled="true"/>
+      <Columns/>
+      <Parameters>
+         <Parameter default="VAR_CIDADE" name="VAR_CIDADE" type="String"/>
+      </Parameters>
+      <Query><![CDATA[SELECT X.SABOR, X.FATURAMENTO FROM (
+SELECT 
+dim_produto.Atr_Sabor AS SABOR,
+SUM(fato_presidencia.faturamento) AS FATURAMENTO, 
+SUM(fato_presidencia.custo_fixo) + 
+SUM(fato_presidencia.custo_frete) + 
+SUM(fato_presidencia.custo_variavel) AS CUSTO
+FROM fato_presidencia
+INNER JOIN dim_produto ON fato_presidencia.ID_Produto = dim_produto.ID_Produto
+INNER JOIN dim_fabrica ON fato_presidencia.ID_Fabrica = dim_fabrica.ID_Fabrica
+INNER JOIN dim_tempo ON fato_presidencia.ID_Tempo = dim_tempo.ID_tempo
+INNER JOIN dim_cliente ON fato_presidencia.ID_Cliente = dim_cliente.ID_Cliente
+WHERE dim_cliente.Desc_Cidade in (${VAR_CIDADE})
+GROUP BY dim_produto.Atr_Sabor) X
+ORDER BY X.FATURAMENTO DESC]]></Query>
+   </DataAccess>
+</CDADescriptor>
